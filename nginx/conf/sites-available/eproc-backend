@@ -1,0 +1,22 @@
+upstream eproc_backend {
+        server unix:///opt/eproc/s2p-verp/tmp/sockets/puma.production.sock fail_timeout=0;
+}
+
+server {
+        listen 3443;
+        server_name             api-procurement.ssprimadaya.co.id;
+#        ssl on;
+#        ssl_certificate         /home/ubuntu/procura_ssl/star_procura_id_bundle.crt;
+#        ssl_certificate_key     /home/ubuntu/procura_ssl/star_procura_id.key;
+#        ssl_protocols           TLSv1.2 TLSv1.1 TLSv1;
+
+        location / {
+                proxy_pass http://eproc_backend;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $http_host;
+                proxy_redirect off;
+                client_max_body_size    10M;
+                access_log /var/log/nginx/upstream-eproc-s2p.log;
+        }
+}
+
